@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do Application</title>
+    <style>
+        .btn-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn {
+            margin-left: 5px;
+            padding: 6px 12px;
+            font-size: 14px;
+            background-color: #d02c2c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-out, transform 0.2s ease-out;
+        }
+
+        .btn:hover {
+            background-color: #8d2931;
+            transform: scale(1.05); /* Scale up slightly on hover */
+        }
+
+        .addBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #d02855;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-out, transform 0.2s ease-out;
+        }
+
+        .addBtn:hover {
+            background-color: #9f3660;
+            transform: scale(1.05); /* Scale up slightly on hover */
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: rgb(133, 58, 203);
+            padding-left: 40px;
+        }
+        .completed::before {
+        content: '';
+        color: white;
+        position: absolute;
+        padding-top: 9px;
+        border-color: #3e9d57;
+        border-style: solid;
+        border-width: 0 2px 2px 0;
+        top: 10px;
+        left: 16px;
+        transform: rotate(45deg);
+        height: 12px;
+        width: 9px;
+        }
+
+        
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Remove margins and padding from the list */
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none; /* Remove default list style */
+        }
+
+        /* Style the list items */
+        ul li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            position: relative;
+            padding: 12px 8px;
+            font-size: 18px;
+            transition: background-color 0.2s ease-out, color 0.2s ease-out;
+            background-color: #979595; /* Adjust background color here */
+        }
+
+        /* Hover effect */
+        ul li:hover {
+            background-color: #cecbc9;
+        }
+
+        /* Input style */
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 70%;
+            margin-right: 10px;
+        }
+
+        /* Input field style */
+        #taskInput {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #c93771;
+            border-radius: 4px;
+            width: 70%;
+            margin-right: 10px;
+            transition: border-color 0.3s ease-out, box-shadow 0.2s ease-out;
+        }
+
+        #taskInput:focus {
+            outline: none;
+            border-color: #aa4458; /* Green border color when focused */
+            box-shadow: 0 0 5px rgba(68, 157, 68, 0.5); /* Light green shadow when focused */
+        }
+
+    </style>
+</head>
+<body style="font-family: Arial, Helvetica, sans-serif;">
+    <center>
+    <div style="width: 500px;">
+    <h1 style="color: #352b9c;">My To-Do List</h1>
+    <h3 style="color: #3a9d53;">Click on completed tasks to check them</h3>
+    <ul id="taskList"></ul>
+    <br/>
+    <br/>
+    <input type="text" id="taskInput" placeholder="Enter a task...">
+    &nbsp;<button class="addBtn" onclick="addOrUpdateTask()">Add Task</button>
+    </div>
+    </center>
+
+    <script>
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+        let editItem = null;
+
+        function addOrUpdateTask() {
+            const taskText = taskInput.value.trim();
+            if (!taskText) return;
+
+            if (editItem) {
+                // Update existing task
+                editItem.querySelector('.task-text').textContent = taskText;
+                editItem = null;
+                document.querySelector('button.addBtn').textContent = 'Add Task';
+            } else {
+                // Add new task
+                const taskItem = document.createElement('li');
+
+                // Task text
+                const taskTextSpan = document.createElement('span');
+                taskTextSpan.textContent = taskText;
+                taskTextSpan.className = 'task-text';
+
+                taskItem.appendChild(taskTextSpan);
+
+                // Button container
+                const btnContainer = document.createElement('div');
+                btnContainer.className = 'btn-container';
+
+                // Edit button
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.className = 'btn';
+                editButton.addEventListener('click', () => {
+                    taskInput.value = taskTextSpan.textContent;
+                    editItem = taskItem;
+                    document.querySelector('button.addBtn').textContent = 'Edit Task';
+                });
+                btnContainer.appendChild(editButton);
+
+                // Delete button
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.className = 'btn';
+                deleteButton.addEventListener('click', () => {
+                    taskItem.remove();
+                });
+                btnContainer.appendChild(deleteButton);
+
+                taskItem.appendChild(taskTextSpan);
+                taskItem.appendChild(btnContainer);
+                taskList.appendChild(taskItem);
+            }
+
+            taskInput.value = '';
+        }
+
+        function toggleCompleted(event) {
+            const taskTextSpan = event.target;
+            const taskItem = taskTextSpan.parentElement;
+            taskTextSpan.classList.toggle('completed');
+        }
+
+        taskList.addEventListener('click', function(ev) {
+            if (ev.target.tagName === 'LI' || ev.target.tagName === 'SPAN') {
+                ev.target.closest('li').querySelector('.task-text').classList.toggle('completed');
+            }
+        }, false);
+
+    </script>
+</body>
+</html>
